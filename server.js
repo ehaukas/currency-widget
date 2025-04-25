@@ -18,7 +18,6 @@ app.get('/api/rates', async (req, res) => {
     // Bruk riktig https URL
     const response = await fetch(`https://api.exchangerate.host/live?access_key=${API_KEY}&source=NOK&currencies=EUR,USD,DKK&format=1`);
     const result = await response.json();
-    console.log("💬 API responded:", result); // Logg hele svaret for debugging
 
     if (!result.quotes) {
       throw new Error("Missing quotes from API");
@@ -30,7 +29,7 @@ app.get('/api/rates', async (req, res) => {
       return {
         currency,
         quoteCurrency: "NOK",
-        midRate: rate,
+        midRate: 1 / rate,
         updatedDate: now.toISOString()
       };
     });
