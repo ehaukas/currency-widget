@@ -16,7 +16,7 @@ app.use(express.static(path.join(__dirname)));
 // Fetch currency rates
 async function fetchRates() {
   try {
-    const response = await fetch(`https://api.exchangerate.host/latest?base=NOK&symbols=EUR,USD,DKK&apikey=${API_KEY}`);
+    const response = await fetch(`https://api.exchangerate.host/latest?base=NOK&symbols=EUR,USD,DKK&access_key=${API_KEY}`);
     const data = await response.json();
 
     if (!data || !data.rates) {
