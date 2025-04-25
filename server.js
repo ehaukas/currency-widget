@@ -4,9 +4,10 @@ const cron = require('node-cron');
 const path = require('path');
 
 const app = express();
+// Bruk PORT miljøvariabelen fra Render (hvis ikke, fall tilbake på 3000)
 const PORT = process.env.PORT || 3000;
 
-const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'cc1fccbc44d79ec99d47885178031703'; // <-- Husk å sette din API-nøkkel!
+const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'YOUR_API_KEY_HERE'; // Skriv inn din API-nøkkel
 
 let cachedRates = [];
 
@@ -50,7 +51,7 @@ cron.schedule('0 8,10,12,14,16 * * 1-5', () => {
   fetchRates();
 });
 
-// Start server
+// Start server (bruk PORT miljøvariabelen)
 app.listen(PORT, () => {
   console.log(`✅ Currency Widget API running at http://localhost:${PORT}/api/rates`);
 });
