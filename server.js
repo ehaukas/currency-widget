@@ -6,7 +6,7 @@ const path = require('path'); // 👈 Legger til path for å serve statiske file
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'DIN_API_NOKKEL_HER'; // Husk å sette din API nøkkel
+const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'cc1fccbc44d79ec99d47885178031703'; // Husk å sette din API nøkkel
 
 let cachedRates = [];
 
