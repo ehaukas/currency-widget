@@ -1,57 +1,47 @@
 const express = require('express');
 const fetch = require('node-fetch');
-const cron = require('node-cron');
-const path = require('path');
 
 const app = express();
-// Bruk PORT miljøvariabelen fra Render (hvis ikke, fall tilbake på 3000)
 const PORT = process.env.PORT || 3000;
 
-const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'YOUR_API_KEY_HERE'; // Skriv inn din API-nøkkel
+// API-key som miljøvariabel
+const API_KEY = process.env.EXCHANGE_RATE_API_KEY; // Sørg for at du har satt denne variabelen på Render
 
-let cachedRates = [];
+// CORS header
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
-// Serve static files like currency-widget.html
-app.use(express.static(path.join(__dirname)));
-
-// Fetch currency rates
-async function fetchRates() {
+app.get('/api/rates', async (req, res) => {
   try {
-    const response = await fetch(`https://api.exchangerate.host/latest?base=NOK&symbols=EUR,USD,DKK&access_key=${API_KEY}`);
-    const data = await response.json();
+    // Bruk riktig https URL
+    const response = await fetch(`https://api.exchangerate.host/live?access_key=${API_KEY}&source=NOK&currencies=EUR,USD,DKK&format=1`);
+    const result = await response.json();
+    console.log("💬 API responded:", result); // Logg hele svaret for debugging
 
-    if (!data || !data.rates) {
-      throw new Error('Missing rates from API');
+    if (!result.quotes) {
+      throw new Error("Missing quotes from API");
     }
 
-    const updatedDate = new Date().toISOString();
-    cachedRates = [
-      { currency: 'EUR', quoteCurrency: 'NOK', midRate: 1 / data.rates.EUR, updatedDate },
-      { currency: 'USD', quoteCurrency: 'NOK', midRate: 1 / data.rates.USD, updatedDate },
-      { currency: 'DKK', quoteCurrency: 'NOK', midRate: 1 / data.rates.DKK, updatedDate }
-    ];
+    const now = new Date();
+    const data = Object.entries(result.quotes).map(([pair, rate]) => {
+      const currency = pair.slice(3); // Fjern 'NOK' prefixet
+      return {
+        currency,
+        quoteCurrency: "NOK",
+        midRate: rate,
+        updatedDate: now.toISOString()
+      };
+    });
 
-    console.log('✅ Rates updated at', updatedDate);
-  } catch (error) {
-    console.error('❌ Fetch error:', error);
+    res.json(data);
+  } catch (err) {
+    console.error("Fetch error:", err);
+    res.status(500).send("Error fetching exchange rates.");
   }
-}
-
-// API endpoint
-app.get('/api/rates', (req, res) => {
-  res.json(cachedRates);
 });
 
-// Initial fetch when server starts
-fetchRates();
-
-// Scheduled fetching at 08:00, 10:00, 12:00, 14:00, 16:00 on Monday-Friday
-cron.schedule('0 8,10,12,14,16 * * 1-5', () => {
-  console.log('🔄 Scheduled fetch triggered.');
-  fetchRates();
-});
-
-// Start server (bruk PORT miljøvariabelen)
 app.listen(PORT, () => {
   console.log(`✅ Currency Widget API running at http://localhost:${PORT}/api/rates`);
 });
