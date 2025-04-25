@@ -1,11 +1,15 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // API-key som miljøvariabel
 const API_KEY = process.env.EXCHANGE_RATE_API_KEY; // Sørg for at du har satt denne variabelen på Render
+
+// Server statiske filer, inkludert HTML-filen
+app.use(express.static(path.join(__dirname)));
 
 // CORS header
 app.use((req, res, next) => {
