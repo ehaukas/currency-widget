@@ -1,6 +1,8 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const cron = require('node-cron');
+const path = require('path');
+app.use(express.static(path.join(__dirname)));
 
 const app = express();
 const PORT = process.env.PORT || 3000;
