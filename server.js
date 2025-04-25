@@ -1,22 +1,22 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const cron = require('node-cron');
-const path = require('path'); // 👈 Legger til path for å serve statiske filer
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'cc1fccbc44d79ec99d47885178031703'; // Husk å sette din API nøkkel
+const API_KEY = process.env.EXCHANGE_RATE_API_KEY || 'cc1fccbc44d79ec99d47885178031703'; // <-- Husk å sette din API-nøkkel!
 
 let cachedRates = [];
 
 // Serve static files like currency-widget.html
 app.use(express.static(path.join(__dirname)));
 
-// Fetch function
+// Fetch currency rates
 async function fetchRates() {
   try {
-    const response = await fetch(`https://api.exchangerate.host/latest?base=NOK&symbols=EUR,USD,DKK&access_key=${API_KEY}`);
+    const response = await fetch(`https://api.exchangerate.host/latest?base=NOK&symbols=EUR,USD,DKK&apikey=${API_KEY}`);
     const data = await response.json();
 
     if (!data || !data.rates) {
@@ -41,12 +41,12 @@ app.get('/api/rates', (req, res) => {
   res.json(cachedRates);
 });
 
-// Initial fetch
+// Initial fetch when server starts
 fetchRates();
 
-// Schedule fetching at 08:00, 10:00, 12:00, 14:00, and 16:00 Monday to Friday
+// Scheduled fetching at 08:00, 10:00, 12:00, 14:00, 16:00 on Monday-Friday
 cron.schedule('0 8,10,12,14,16 * * 1-5', () => {
-  console.log('🔄 Scheduled fetch');
+  console.log('🔄 Scheduled fetch triggered.');
   fetchRates();
 });
 
