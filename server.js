@@ -1,5 +1,6 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const cron = require('node-cron');
 const path = require('path');
 
 const app = express();
@@ -17,34 +18,51 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get('/api/rates', async (req, res) => {
+// Variabel for å cache valutakurser
+let cachedRates = [];
+
+// Fetch currency rates funksjon
+async function fetchRates() {
   try {
-    // Bruk riktig https URL
     const response = await fetch(`https://api.exchangerate.host/live?access_key=${API_KEY}&source=NOK&currencies=EUR,USD,DKK&format=1`);
     const result = await response.json();
 
-    if (!result.quotes) {
-      throw new Error("Missing quotes from API");
+    if (!result.rates) {
+      throw new Error("Missing rates from API");
     }
 
     const now = new Date();
-    const data = Object.entries(result.quotes).map(([pair, rate]) => {
+    cachedRates = Object.entries(result.rates).map(([pair, rate]) => {
       const currency = pair.slice(3); // Fjern 'NOK' prefixet
       return {
         currency,
         quoteCurrency: "NOK",
-        midRate: 1 / rate,
+        midRate: 1 / rate, // Konverter til ønsket valutaformat
         updatedDate: now.toISOString()
       };
     });
 
-    res.json(data);
+    console.log('✅ Rates updated at', now.toISOString());
   } catch (err) {
-    console.error("Fetch error:", err);
-    res.status(500).send("Error fetching exchange rates.");
+    console.error('❌ Fetch error:', err);
   }
+}
+
+// API endpoint
+app.get('/api/rates', (req, res) => {
+  res.json(cachedRates);
 });
 
+// Initial fetch når serveren starter
+fetchRates();
+
+// Cron-jobb for å hente data på spesifikke tider (08:00, 10:00, 12:00, 14:00, 16:00 på mandag til fredag)
+cron.schedule('0 8,10,12,14,16 * * 1-5', () => {
+  console.log('🔄 Scheduled fetch triggered.');
+  fetchRates();
+});
+
+// Start server
 app.listen(PORT, () => {
   console.log(`✅ Currency Widget API running at http://localhost:${PORT}/api/rates`);
 });
