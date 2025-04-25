@@ -1,13 +1,13 @@
 {
-  "name": "currency-widget",
+  "name": "currency-widget-scheduled",
   "version": "1.0.0",
-  "description": "Currency widget fetching from ExchangeRate.host",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.6.7",
+    "node-cron": "^3.0.2"
   }
 }
