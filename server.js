@@ -20,17 +20,17 @@ app.get('/api/rates', async (req, res) => {
     const result = await response.json();
     console.log("💬 API responded:", result); // Logg hele svaret for debugging
 
-    if (!result.rates) {
-      throw new Error("Missing rates from API");
+    if (!result.quotes) {
+      throw new Error("Missing quotes from API");
     }
 
     const now = new Date();
-    const data = Object.entries(result.rates).map(([pair, rate]) => {
+    const data = Object.entries(result.quotes).map(([pair, rate]) => {
       const currency = pair.slice(3); // Fjern 'NOK' prefixet
       return {
         currency,
         quoteCurrency: "NOK",
-        midRate: rate, // Bruk direkte verdi fra API (f.eks. 1 EUR = 11.84 NOK)
+        midRate: rate,
         updatedDate: now.toISOString()
       };
     });
