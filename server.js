@@ -25,7 +25,7 @@ let cachedRates = [];
 // Fetch currency rates funksjon
 async function fetchRates() {
   try {
-    const response = await fetch(`https://api.exchangerate.host/live?access_key=${API_KEY}&source=NOK&currencies=EUR,GBP,USD,DKK&format=1`);
+    const response = await fetch(`https://api.exchangerate.host/live?access_key=${API_KEY}&source=NOK&currencies=EUR,USD,DKK&format=1`);
     const result = await response.json();
 
     if (!result.rates) {
