@@ -6,7 +6,7 @@
   <title>Valutakurser</title>
   <style>
     body {
-      font-family: Open Sans, sans-serif;
+      font-family: Open Sans;
       background: white;
       color: #2F549A;
       font-size: 1.8em;
@@ -21,16 +21,22 @@
     .rate-value {
       color: rgba(47, 84, 154, 0.72);
     }
+    .timestamp {
+      font-size: 1em;
+      color: #7F8C8D;
+      text-align: center;
+      margin-top: 10px;
+    }
     .source {
-      font-size: 0.5em;
-      color: #999;
-      margin-top: 2em;
+      font-size: 0.8em;
+      color: #7F8C8D;
+      text-align: right;
     }
   </style>
 </head>
 <body>
   <div id="rates">Laster valutakurser…</div>
-  <div class="source">Kilde: ExchangeRate.host</div>
+  <div class="timestamp" id="timestamp"></div>
 
   <script>
     function formatDate(isoString) {
@@ -56,8 +62,13 @@
           updated = formatDate(rate.updatedDate);
         });
 
-        const final = parts.join(" &nbsp;|&nbsp; ") + ` &nbsp;|&nbsp; <span class='rate-label'>Oppdatert:</span> <span class='rate-value'>${updated}</span>`;
-        document.getElementById("rates").innerHTML = final;
+        const firstLine = parts.join(" &nbsp;|&nbsp; ");
+        const secondLine = `<span class='rate-label'>Oppdatert:</span> <span class='rate-value'>${updated}</span>`;
+        const source = "<span class='source'>Kilde: ExchangeRate.host</span>";
+
+        // Set the first and second line in the HTML
+        document.getElementById("rates").innerHTML = firstLine;
+        document.getElementById("timestamp").innerHTML = secondLine + " &nbsp;" + source;
       })
       .catch(err => {
         document.getElementById("rates").textContent = "Feil ved henting av valutakurser";
