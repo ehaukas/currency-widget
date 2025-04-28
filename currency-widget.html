@@ -22,19 +22,20 @@
       color: rgba(47, 84, 154, 0.72);
     }
     .timestamp {
-      font-size: 1em; /* Adjusting the timestamp size */
+      font-size: 0.7em; /* Adjusting the timestamp size */
       color: #7F8C8D; /* Grey color for timestamp */
       text-align: center;
       margin-top: 10px;
     }
     .source {
-      font-size: 0.8em; /* Smaller font size for source */
+      font-size: 0.6em; /* Smaller font size for source */
       color: #7F8C8D; /* Grey color for source */
       text-align: right;
     }
     .updated {
-      font-size: 1.2em; /* Keeping 'Oppdatert' bigger than the timestamp */
+      font-size: 0.9em; /* Keeping 'Oppdatert' bigger than the timestamp */
       color: rgb(47, 84, 154); /* Blue color for 'Oppdatert:' */
+      font-weight: bold;
     }
   </style>
 </head>
@@ -67,7 +68,7 @@
         });
 
         const firstLine = parts.join(" &nbsp;|&nbsp; ");
-        const secondLine = `<span class='updated'>Oppdatert:</span> <span class='rate-value'>${updated}</span>`;
+        const secondLine = `<span class='updated'>Oppdatert:</span> <span class='timestamp'>${updated}</span>`;
         const source = "<span class='source'>Kilde: ExchangeRate.host</span>";
 
         // Set the first and second line in the HTML
